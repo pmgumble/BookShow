@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+  <h1>Welcome to Book My Show!</h1>
+  <p class="lead">Find your favorite movies and book your tickets online.</p>
+  <hr class="my-4">
+  <p>Get the best movie experience with Book My Show.</p>
+  <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+
+
+
+
+    <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+        <form action="/register" method="post" enctype="multipart/form-data">
+          {{ form.hidden_tag() }}
+          {{ form.username.label(class="form-label") }}
+          {{ form.username(class="form-control") }}
+        </br>
+          {{ form.email.label(class="form-label") }}
+          {{ form.email(class="form-control") }}
+      
+          {{ form.password_hash.label(class="form-label") }}
+          {{ form.password_hash(class="form-control") }}
+
+          </br>
+          {{ form.submit(class="btn btn-secondary")}}
+        </form>
+    
+</div>
+    
+    {% endblock %}
