@@ -10,6 +10,7 @@ from wtforms import StringField,SubmitField,PasswordField, BooleanField, Validat
 from wtforms.validators import DataRequired, EqualTo, Length
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms .widgets import TextArea
+from datetime import datetime
 
 
 
@@ -121,6 +122,8 @@ def logout():
 
 
 
+
+
 # User Registration 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -150,6 +153,8 @@ def home():
 def movie_detail(movie_id):
     movie = Movie.query.get_or_404(movie_id)
     showtimes = Showtime.query.filter_by(movie_id=movie_id).all()
+    for showtime in showtimes:
+        showtime.time = datetime.strptime(showtime.time, '%Y-%m-%d %H:%M:%S')
     return render_template('movie_detail.html', movie=movie, showtimes=showtimes)
 
 

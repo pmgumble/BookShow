@@ -1,21 +1,28 @@
-{% extends "base.html" %}
-
-{% block content %}
-  <head>
-    <title>{{ movie.name }}</title>
-  </head>
-  <body>
-    <h1>{{ movie.name }}</h1>
-    <p>{{ movie.description }}</p>
-    <p><strong>Director:</strong> {{ movie.director }}</p>
-    <p><strong>Cast:</strong> {{ movie.cast }}</p>
-    <p><strong>Duration:</strong> {{ movie.duration }} mins</p>
-    <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
-    <p><strong>Tags:</strong> {{ movie.tags }}</p>
-    <p><strong>Rating:</strong> {{ movie.rating }}</p>
 
 
-  </body>
+  {% extends 'base.html' %}
 
+  {% block content %}
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          
+        </div>
+        <div class="col-md-6">
+          <h2>{{ movie.name }}</h2>
+          <p>{{ movie.genre }}</p>
+          <p>Cast: {{ movie.cst }} min</p>
+        </div>
+      </div>
+      <hr>
+      <h3>Showtimes:</h3>
+      <ul>
+        {% for showtime in showtimes %}
+          <li>{{ showtime.time.strftime('%Y-%m-%d %H:%M:%S') }} - {{ show.venue.name }}</li>
+        {% endfor %}
+      </ul>
 
-{% endblock %}
+    </div>
+  {% endblock %}
+  
+  
