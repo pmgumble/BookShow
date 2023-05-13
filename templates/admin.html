@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 class="mt-4 mb-3">Admin Panel</h1>
+
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" href="#shows">Shows</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#cinemas">Cinemas</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#Movie">Movie</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+
+    <h2>Add Show</h2>
+    <form method="post" action="{{ url_for('admin') }}">
+        {{ show_form.hidden_tag() }}
+        <div class="form-group">
+            {{ show_form.venue_id.label(class_="form-control-label") }}
+            {{ show_form.venue_id(class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ show_form.movie_id.label(class_="form-control-label") }}
+            {{ show_form.movie_id(class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ show_form.date.label(class_="form-control-label") }}
+            {{ show_form.date(class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ show_form.time.label(class_="form-control-label") }}
+            {{ show_form.time(class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ show_form.ticket_price.label(class_="form-control-label") }}
+            {{ show_form.ticket_price(class_="form-control") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Add Show</button>
+    </form>
+
+
+    <hr>
+
+    <h2>Add Cinema</h2>
+    <form method="post" action="{{ url_for('admin') }}">
+        {{ cinema_form.hidden_tag() }}
+        <div class="form-group">
+            {{ cinema_form.name.label(class_="form-control-label") }}
+            {{ cinema_form.name(class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ cinema_form.place.label(class_="form-control-label") }}
+            {{ cinema_form.place(class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ cinema_form.capacity.label(class_="form-control-label") }}
+            {{ cinema_form.capacity(class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ cinema_form.image_url.label(class_="form-control-label") }}
+            {{ cinema_form.image_url(class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ cinema_form.description.label(class_="form-control-label") }}
+            {{ cinema_form.description(class_="form-control") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Add Cinema</button>
+    </form>
+
+    <hr>
+
+    <h2>Cinemas</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Seating Capacity</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cinema in cinemas %}
+                <tr>
+                    <td>{{ cinema.id }}</td>
+                    <td>{{ cinema.name }}</td>
+                    <td>{{ cinema.location }}</td>
+                    <td>{{ cinema.seating_capacity }}</td>
+
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h2>Shows</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Venue</th>
+                <th>Movie</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Ticket Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for show in shows %}
+                <tr>
+                    <td>{{ show.id }}</td>
+                    <td>{{ show.cinema.name }}</td>
+                    <td>{{ show.movie.name }}</td>
+                    <td>{{ show.date }}</td>
+                    <td>{{ show.time }}</td>
+                    <td>{{ show.ticket_price }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    {% endblock %}

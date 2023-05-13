@@ -11,6 +11,9 @@ class User(UserMixin,db.Model):
     # password = db.Column(db.String(100))
     is_admin = db.Column(db.Boolean, default=False)
     password_hash = db.Column(db.String(128),nullable=True)
+    bookings = db.relationship('Booking', backref='user', lazy=True)
+    comments = db.relationship('Comment', backref='user', lazy=True)
+    likes = db.relationship('Like', backref='user', lazy=True)
 
     @property
     def password(self):
@@ -40,6 +43,15 @@ class Movie(db.Model):
     director = db.Column(db.String(100), nullable=False)
     cast = db.Column(db.String(1000), nullable=False)
     synopsis = db.Column(db.Text, nullable=False)
+    duration = db.Column(db.Integer, nullable=False)
+    release_date = db.Column(db.Text)
+    rating = db.Column(db.Float, nullable=False)
+    # poster = db.Column(db.String(100), nullable=False)
+    bookings = db.relationship('Booking', backref='movie', lazy=True)
+    comments = db.relationship('Comment', backref='movie', lazy=True)
+    likes = db.relationship('Like', backref='movie', lazy=True)
+    showtimes = db.relationship('Showtime', backref='movie', lazy=True)
+
 
 
 class Cinema(db.Model):
@@ -47,6 +59,8 @@ class Cinema(db.Model):
     name = db.Column(db.String(100), nullable=False)
     location = db.Column(db.String(100), nullable=False)
     seating_capacity = db.Column(db.Integer, nullable=False)
+    showtimes = db.relationship('Showtime', backref='cinema', lazy=True)
+
 
 
 
@@ -57,43 +71,45 @@ class Showtime(db.Model):
     date = db.Column(db.String)
     time = db.Column(db.String, nullable=False)
     ticket_price = db.Column(db.Float, nullable=False)
-    venue = db.relationship('Venue', backref='showtimes', lazy=True)
+    bookings = db.relationship('Booking', backref='showtime', lazy=True)
+
+
 
 
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     showtime_id = db.Column(db.Integer, db.ForeignKey('showtime.id'), nullable=False)
     movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'), nullable=False)
     cinema_id = db.Column(db.Integer, db.ForeignKey('cinema.id'), nullable=False)
     date = db.Column(db.Date, nullable=False)
     time = db.Column(db.Time, nullable=False)
     num_tickets = db.Column(db.Integer, nullable=False)
-    show_id = db.Column(db.Integer, db.ForeignKey('show.id'), nullable=False)
-    # show = db.relationship('Show', backref=db.backref('bookings', lazy=True))
+    # show_id = db.Column(db.Integer, db.ForeignKey('show.id'), nullable=False)
+    # # show = db.relationship('Show', backref=db.backref('bookings', lazy=True))
 
-class Venue(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    place = db.Column(db.String(100), nullable=False)
-    capacity = db.Column(db.Integer, nullable=False)
-    shows = db.relationship('Show', backref='venue', lazy=True)
+# class Venue(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(100), nullable=False)
+#     place = db.Column(db.String(100), nullable=False)
+#     capacity = db.Column(db.Integer, nullable=False)
+#     shows = db.relationship('Show', backref='venue', lazy=True)
 
-class Show(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    rating = db.Column(db.Float, nullable=False)
-    tags = db.Column(db.String(1000), nullable=False)
-    ticket_price = db.Column(db.Float, nullable=False)
-    venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), nullable=False)
-    bookings = db.relationship('Booking', backref='show', lazy=True)
-    comments = db.relationship('Comment', backref='show', lazy=True)
-    likes = db.relationship('Like', backref='show', lazy=True)
+# class Show(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(100), nullable=False)
+#     rating = db.Column(db.Float, nullable=False)
+#     tags = db.Column(db.String(1000), nullable=False)
+#     ticket_price = db.Column(db.Float, nullable=False)
+#     venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), nullable=False)
+#     bookings = db.relationship('Booking', backref='show', lazy=True)
+#     comments = db.relationship('Comment', backref='show', lazy=True)
+#     likes = db.relationship('Like', backref='show', lazy=True)
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, nullable=False)
-    show_id = db.Column(db.Integer, db.ForeignKey('show.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'), nullable=False)
     text = db.Column(db.String(200), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
@@ -101,6 +117,6 @@ class Comment(db.Model):
 # Like model
 class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, nullable=False)
-    show_id = db.Column(db.Integer, db.ForeignKey('show.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
