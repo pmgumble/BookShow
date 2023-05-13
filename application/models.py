@@ -66,8 +66,8 @@ class Cinema(db.Model):
 
 class Showtime(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'), nullable=False)
-    cinema_id = db.Column(db.Integer, db.ForeignKey('cinema.id'), nullable=False)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id') )
+    cinema_id = db.Column(db.Integer, db.ForeignKey('cinema.id'))
     date = db.Column(db.String)
     time = db.Column(db.String, nullable=False)
     ticket_price = db.Column(db.Float, nullable=False)

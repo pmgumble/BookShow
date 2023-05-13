@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Edit Show</h1>
+  <form method="POST" action="{{ url_for('edit_show', id=show.id) }}">
+    {{ show_form.csrf_token }}
+    {{ show_form.hidden_tag() }}
+    
+
+
+    <div class="form-group">
+      {{ show_form.date.label }} {{ show_form.date(class='form-control') }}
+      {% if show_form.date.errors %}
+        <ul class="errors">
+          {% for error in show_form.date.errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+    <div class="form-group">
+      {{ show_form.time.label }} {{ show_form.time(class='form-control') }}
+      {% if show_form.time.errors %}
+        <ul class="errors">
+          {% for error in show_form.time.errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+    <div class="form-group">
+      {{ show_form.ticket_price.label }} {{ show_form.ticket_price(class='form-control') }}
+      {% if show_form.ticket_price.errors %}
+        <ul class="errors">
+          {% for error in show_form.ticket_price.errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+{% endblock %}
+

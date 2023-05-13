@@ -59,6 +59,13 @@ class ShowForm(FlaskForm):
     ticket_price = StringField("Ticket Price", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
+# Create a show edit form
+class ShowEditForm(FlaskForm):
+    date = StringField("Date", validators=[DataRequired()])
+    time = StringField("Time", validators=[DataRequired()])
+    ticket_price = StringField("Ticket Price", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
 # Create a venue form
 class CinemaForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
@@ -66,6 +73,15 @@ class CinemaForm(FlaskForm):
     capacity = StringField("Capacity", validators=[DataRequired()])
     image_url = StringField("Image URL", validators=[DataRequired()])
     description = TextAreaField("Description", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+# Create a CinemaEditForm form
+class CinemaEditForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    location = StringField("location", validators=[DataRequired()])
+    seating_capacity = StringField("seating_capacity", validators=[DataRequired()])
+    # image_url = StringField("Image URL", validators=[DataRequired()])
+    # description = TextAreaField("Description", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
 # Create a movie form
@@ -171,6 +187,9 @@ def admin():
 
     show_form = ShowForm()
     cinema_form = CinemaForm()
+    movie_form = MovieForm()
+
+
 
     if show_form.validate_on_submit():
         # Retrieve form data
@@ -213,6 +232,31 @@ def admin():
 
         # Redirect back to admin page
         return redirect(url_for('admin'))
+    
+    if movie_form.validate_on_submit():
+        # Retrieve form data
+        name = movie_form.name.data
+        # image_url = movie_form.image_url.data
+        genere = movie_form.genere.data
+        director = movie_form.director.data
+        cast = movie_form.cast.data
+        synopsis = movie_form.synopsis.data
+        duration = movie_form.duration.data
+        release_date = movie_form.release_date.data
+        rating = movie_form.rating.data
+
+        # Create a new Movie object
+        movie = Movie(name=name, genre=genere, director=director, cast=cast, synopsis=synopsis, duration=duration, release_date=release_date, rating=rating)
+
+        # Add new movie to the database
+        db.session.add(movie)
+        db.session.commit()
+
+        # Flash message to indicate success
+        flash('New movie added successfully!', 'success')
+
+        # Redirect back to admin page
+        return redirect(url_for('admin'))
 
     # Get all cinemas from the database
     cinemas = Cinema.query.all()
@@ -220,10 +264,70 @@ def admin():
     # Get all shows from the database
     shows = Showtime.query.all()
 
-    return render_template('admin.html', shows=shows, cinemas=cinemas, show_form=show_form, cinema_form=cinema_form)
+    # Get all Movies from the databse
+    movies = Movie.query.all()
+
+    return render_template('admin.html', shows=shows, cinemas=cinemas, show_form=show_form, cinema_form=cinema_form, movies=movies, movie_form=movie_form)
 
 
+@app.route('/admin/delete_movie/<int:id>', methods=['GET','POST'])
+@login_required
+def delete_movie(id):
+    # Check if current user is admin
+    if not current_user.is_admin:
+        return redirect(url_for('home'))
 
+    # Get movie with the specified ID
+    movie = Movie.query.get_or_404(id)
+
+    # Delete movie from database
+    db.session.delete(movie)
+    db.session.commit()
+
+    # Flash message to indicate success
+    flash('Movie deleted successfully!', 'success')
+
+    # Redirect back to admin page
+    return redirect(url_for('admin'))
+
+
+@app.route('/admin/edit_movie/<int:id>', methods=['GET','POST'])
+@login_required
+def edit_movie(id):     
+    # Check if current user is admin
+    if not current_user.is_admin:
+        return redirect(url_for('home'))
+
+    movie = Movie.query.get_or_404(id)
+    movie_form = MovieForm()
+
+    if movie_form.validate_on_submit():
+        # Retrieve form data
+        name = movie_form.name.data
+        # image_url = movie_form.image_url.data
+        genere = movie_form.genere.data
+        director = movie_form.director.data
+        cast = movie_form.cast.data
+        synopsis = movie_form.synopsis.data
+        duration = movie_form.duration.data
+        release_date = movie_form.release_date.data
+        rating = movie_form.rating.data
+
+        # Create a new Movie object
+        movie = Movie(name=name, genre=genere, director=director, cast=cast, synopsis=synopsis, duration=duration, release_date=release_date, rating=rating)
+
+        # Add new movie to the database
+        db.session.add(movie)
+        db.session.commit()
+
+        # Flash message to indicate success
+        flash('Movie updated successfully!', 'success')
+
+        # Redirect back to admin page
+        return redirect(url_for('admin'))
+
+    return render_template('edit_movie.html', movie=movie, movie_form=movie_form)
+    
 
 
 
@@ -288,15 +392,15 @@ def admin():
 #     return render_template('admin.html', shows=shows, show_form=show_form)
 
 
-@app.route('/admin/delete_show/<int:show_id>', methods=['POST'])
+@app.route('/admin/delete_show/<int:id>', methods=['GET','POST'])
 @login_required
-def delete_show(show_id):
+def delete_show(id):
     # Check if current user is admin
     if not current_user.is_admin:
         return redirect(url_for('home'))
 
     # Get show with the specified ID
-    show = Showtime.query.get_or_404(show_id)
+    show = Showtime.query.get_or_404(id)
 
     # Delete show from database
     db.session.delete(show)
@@ -308,6 +412,36 @@ def delete_show(show_id):
     # Redirect back to admin page
     return redirect(url_for('admin'))
 
+@app.route('/admin/edit_show/<int:id>', methods=['GET','POST'])
+@login_required
+def edit_show(id):
+    # Check if current user is admin
+    if not current_user.is_admin:
+        return redirect(url_for('home'))
+
+    show = Showtime.query.get_or_404(id)
+    show_form = ShowEditForm()
+
+    if show_form.validate_on_submit():
+        # Retrieve form data
+        date = show_form.date.data
+        time = show_form.time.data
+        ticket_price = show_form.ticket_price.data
+
+        # Update the showtime details
+        show.date = date
+        show.time = time
+        show.ticket_price = ticket_price
+        # Commit changes to the database
+        db.session.commit()
+
+        # Flash message to indicate success
+        flash('Show updated successfully!', 'success')
+
+        # Redirect back to admin page
+        return redirect(url_for('admin'))
+
+    return render_template('edit_show.html', show=show, show_form=show_form)
 
 @app.route('/admin/addmovie', methods=['GET', 'POST'])
 @login_required
@@ -377,6 +511,60 @@ def addcinema():
 
     return render_template('addcinema.html', cinema_form=cinema_form)
 
+@app.route('/admin/edit_cinema/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_cinema(id):
+    # Check if current user is admin
+    if not current_user.is_admin:
+        return redirect(url_for('home'))
+    cinemas = Cinema.query.get_or_404(id)
+    cinema_form = CinemaEditForm()
+
+    if cinema_form.validate_on_submit():
+        # Retrieve form data
+        name = cinema_form.name.data
+        location = cinema_form.location.data
+        capacity = cinema_form.seating_capacity.data
+
+
+        # Update the cinema details
+        cinemas.name = name
+        cinemas.location = location
+        cinemas.seating_capacity = capacity
+
+        # Commit changes to the database
+
+        db.session.commit()
+
+        # Flash message to indicate success
+        flash('Cinema Edited successfully!', 'success')
+
+        # Redirect back to admin page
+        return redirect(url_for('admin'))
+
+    return render_template('edit_cinema.html', cinemas=cinemas, cinema_form=cinema_form)
+
+@app.route('/admin/delete_cinema/<int:id>', methods=['GET','POST'])
+@login_required
+def delete_cinema(id):
+    # Check if current user is admin
+    if not current_user.is_admin:
+        return redirect(url_for('home'))
+
+    # Get cinema with the specified ID
+    cinema = Cinema.query.get_or_404(id)
+
+    # Delete cinema from database
+    db.session.delete(cinema)
+    db.session.commit()
+
+    # Flash message to indicate success
+    flash('Cinema deleted successfully!', 'success')
+
+    # Redirect back to admin page
+    return redirect(url_for('admin'))
+
+
 # @app.route('/movies/<int:movie_id>')
 # def movie_detail(movie_id):
 #     movie = Movie.query.get_or_404(movie_id)
@@ -409,85 +597,7 @@ def addcinema():
 #             return redirect(url_for('book', show_id=show.id))
         
 
-# @app.route('/admin')
-# def admin():
-#     if 'user_id' not in session or not User.query.get(session['user_id']).is_admin:
-#         return redirect(url_for('home'))
-#     shows = Show.query.all()
-#     venues = Venue.query.all()
-#     return render_template('admin.html', shows=shows, venues=venues)
 
-
-# @app.route('/admin/create_venue', methods=['GET', 'POST'])
-# def create_venue():
-#     if 'user_id' not in session or not User.query.get(session['user_id']).is_admin:
-#         return redirect(url_for('home'))
-#     if request.method == 'POST':
-#         name = request.form['name']
-#         place = request.form['place']
-#         capacity = int(request.form['capacity'])
-#         image_url = request.form['image_url']
-#         description = request.form['description']
-#         venue = Venue(name=name, place=place, capacity=capacity, image_url=image_url, description=description)
-#         db.session.add(venue)
-#         db.session.commit()
-#         flash('Venue created successfully!')
-#         return redirect(url_for('admin'))
-#     return render_template('create_venue.html')
-
-
-# @app.route('/admin/edit_venue/<int:venue_id>', methods=['GET', 'POST'])
-# def edit_venue(venue_id):
-#     if 'user_id' not in session or not User.query.get(session['user_id']).is_admin:
-#         return redirect(url_for('home'))
-#     venue = Venue.query.get_or_404(venue_id)
-#     if request.method == 'POST':
-#         venue.name = request.form['name']
-#         venue.place = request.form['place']
-#         venue.capacity = int(request.form['capacity'])
-#         venue.image_url = request.form['image_url']
-#         venue.description = request.form['description']
-#         db.session.commit()
-#         flash('Venue updated successfully!')
-#         return redirect(url_for('admin'))
-#     return render_template('edit_venue.html', venue=venue)
-
-# @app.route('/admin/delete_venue/<int:venue_id>', methods=['GET', 'POST'])
-# def delete_venue(venue_id):
-#     if 'user_id' not in session or not User.query.get(session['user_id']).is_admin:
-#         return redirect(url_for('home'))
-#     venue = Venue.query.get_or_404(venue_id)
-#     if request.method == 'POST':
-#         db.session.delete(venue)
-#         db.session.commit()
-#         flash('Venue deleted successfully!')
-#         return redirect(url_for('admin'))
-#     return render_template('delete_venue.html', venue=venue)
-
-# @app.route('/admin/create_show', methods=['GET', 'POST'])
-# def create_show():
-#     if 'user_id' not in session or not User.query.get(session['user_id']).is_admin:
-#         return redirect(url_for('home'))
-#     venues = Venue.query.all()
-#     if request.method == 'POST':
-#         name = request.form['name']
-#         rating = float(request.form['rating'])
-#         tags = request.form['tags']
-#         ticket_price = float(request.form['ticket_price'])
-#         venue_id = int(request.form['venue'])
-#         venue = Venue.query.get_or_404(venue_id)
-#         show = Show(name=name, rating=rating, tags=tags, ticket_price=ticket_price, venue=venue)
-#         db.session.add(show)
-#         db.session.commit()
-#         flash('Show created successfully!')
-#         return redirect(url_for('admin'))
-#     return render_template('create_show.html', venues=venues)
-
-# @app.route('/admin/edit_show/<int:show_id>', methods=['GET', 'POST'])
-# def edit_show(show_id):
-#     if 'user_id' not in session or not User.query.get(session['user_id']).is_admin:
-#         return redirect(url_for('home'))
-    
 
 
 # # Route for booking tickets
@@ -533,17 +643,7 @@ def addcinema():
 
 
 
-# @app.route('/venue/new', methods=['GET', 'POST'])
-# @login_required
-# def new_venue():
-#     form = VenueForm()
-#     if form.validate_on_submit():
-#         venue = Venue(name=form.name.data, location=form.location.data, capacity=form.capacity.data)
-#         db.session.add(venue)
-#         db.session.commit()
-#         flash('Your venue has been created!')
-#         return redirect(url_for('venue', venue_id=venue.id))
-#     return render_template('create_venue.html', title='New Venue', form=form)
+
 
 
 # @app.route('/show/new', methods=['GET', 'POST'])
@@ -562,71 +662,6 @@ def addcinema():
 #         return redirect(url_for('show', show_id=show.id))
 #     return render_template('create_show.html', title='New Show', form=form)
 
-# # @app.route('/venue/<int:venue_id>/edit', methods=['GET', 'POST'])
-# # @login_required
-# # def edit_venue(venue_id):
-# #     venue = Venue.query.get_or_404(venue_id)
-# #     form = VenueForm()
-# #     if form.validate_on_submit():
-# #         venue.name = form.name.data
-# #         venue.location = form.location.data
-# #         venue.capacity = form.capacity.data
-# #         db.session.commit()
-# #         flash('Your venue has been updated!')
-# #         return redirect(url_for('venue', venue_id=venue.id))
-# #     elif request.method == 'GET':
-# #         form.name.data = venue.name
-# #         form.location.data = venue.location
-# #         form.capacity.data = venue.capacity
-# #     return render_template('edit_venue.html', title='Edit Venue', form=form)
-
-
-
-# # @app.route('/show/<int:show_id>/edit', methods=['GET', 'POST'])
-# # @login_required
-# # def edit_show(show_id):
-# #     show = Show.query.get_or_404(show_id)
-# #     form = ShowForm()
-# #     form.venue.choices = [(venue.id, venue.name) for venue in Venue.query.order_by('name')]
-# #     if form.validate_on_submit():
-# #         show.name = form.name.data
-# #         show.rating = form.rating.data
-# #         show.tags = form.tags.data
-# #         show.ticket_price = form.ticket_price.data
-# #         show.venue_id = form.venue.data
-# #         db.session.commit()
-# #         flash('Your show has been updated!')
-# #         return redirect(url_for('show', show_id=show.id))
-# #     elif request.method == 'GET':
-# #         form.name.data = show.name
-# #         form.rating.data = show.rating
-# #         form.tags.data = show.tags
-# #         form.ticket_price.data = show.ticket_price
-# #         form.venue.data = show.venue_id
-# #     return render_template('edit_show.html', title='Edit Show', form=form)
-
-# # @app.route('/venue/<int:venue_id>/delete', methods=['POST'])
-# # @login_required
-# # def delete_venue(venue_id):
-# #     venue = Venue.query.get_or_404(venue_id)
-# #     db.session.delete(venue)
-# #     db.session.commit()
-# #     flash('Your venue has been deleted!')
-# #     return redirect(url_for('index'))
-
-# @app.route('/show/<int:show_id>/delete', methods=['POST'])
-# @login_required
-# def delete_show(show_id):
-#     show = Show.query.get_or_404(show_id)
-#     db.session.delete(show)
-#     db.session.commit()
-#     flash('Your show has been deleted!')
-#     return redirect(url_for('index'))
-
-# # @app.route('/logout')
-# # def logout():
-# #     logout_user()
-# #     return redirect(url_for('index'))
 
 
 

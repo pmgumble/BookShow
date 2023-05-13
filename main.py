@@ -3,9 +3,11 @@ from flask import Flask
 from application import config
 from application.config import LocalDevelopmentConfig
 from application.database import db
+# from flask_bootstrap import Bootstrap
+
 
 app = None
-
+# bootstrap = Bootstrap(app)
 def create_app():
     app = Flask(__name__, template_folder="templates")
     if os.getenv('ENV', "development") == "production":
@@ -19,6 +21,7 @@ def create_app():
 
 app = create_app()
 
+# app = Flask(__name__, template_folder='E:\Developement\Book_my_Show\templates')
 # Import all the controllers so they are loaded
 from application.controllers import *
 

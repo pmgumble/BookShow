@@ -74,6 +74,80 @@
 
     <hr>
 
+    <h2>Add New Movie</h2>
+
+  <form method="POST">
+    {{ movie_form.hidden_tag() }}
+
+    <div class="form-group">
+      {{ movie_form.name.label }}
+      {{ movie_form.name(class="form-control") }}
+      {% for error in movie_form.name.errors %}
+        <span class="text-danger">{{ error }}</span>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      {{ movie_form.genere.label }}
+      {{ movie_form.genere(class="form-control") }}
+      {% for error in movie_form.genere.errors %}
+        <span class="text-danger">{{ error }}</span>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      {{ movie_form.director.label }}
+      {{ movie_form.director(class="form-control") }}
+      {% for error in movie_form.director.errors %}
+        <span class="text-danger">{{ error }}</span>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      {{ movie_form.cast.label }}
+      {{ movie_form.cast(class="form-control") }}
+      {% for error in movie_form.cast.errors %}
+        <span class="text-danger">{{ error }}</span>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      {{ movie_form.synopsis.label }}
+      {{ movie_form.synopsis(class="form-control") }}
+      {% for error in movie_form.synopsis.errors %}
+        <span class="text-danger">{{ error }}</span>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      {{ movie_form.duration.label }}
+      {{ movie_form.duration(class="form-control") }}
+      {% for error in movie_form.duration.errors %}
+        <span class="text-danger">{{ error }}</span>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      {{ movie_form.release_date.label }}
+      {{ movie_form.release_date(class="form-control") }}
+      {% for error in movie_form.release_date.errors %}
+        <span class="text-danger">{{ error }}</span>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      {{ movie_form.rating.label }}
+      {{ movie_form.rating(class="form-control") }}
+      {% for error in movie_form.rating.errors %}
+        <span class="text-danger">{{ error }}</span>
+      {% endfor %}
+    </div>
+    <br>
+    <div class="form-group">
+      {{ movie_form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+
     <h2>Cinemas</h2>
     <table class="table">
         <thead>
@@ -92,6 +166,10 @@
                     <td>{{ cinema.name }}</td>
                     <td>{{ cinema.location }}</td>
                     <td>{{ cinema.seating_capacity }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_cinema', id=cinema.id) }}" class="btn btn-primary">Edit</a>
+                        <a href="{{ url_for('delete_cinema', id=cinema.id) }}" class="btn btn-danger">Delete</a>
+                    </td>
 
                 </tr>
             {% endfor %}
@@ -122,6 +200,50 @@
                     <td>{{ show.date }}</td>
                     <td>{{ show.time }}</td>
                     <td>{{ show.ticket_price }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_show', id=show.id) }}" class="btn btn-primary">Edit</a>
+                        <a href="{{ url_for('delete_show', id=show.id) }}" class="btn btn-danger">Delete</a>
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+    <hr>
+
+    
+    <h2>Movies</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Genere</th>
+                <th>Director</th>
+                <th>Cast</th>
+                <th>Synopsis</th>
+                <th>Duration</th>
+                <th>Release Date</th>
+                <th>Ratings</th>
+                <th>Actions</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for movie in movies %}
+                <tr>
+                    <td>{{ movie.id }}</td>
+                    <td>{{ movie.name }}</td>
+                    <td>{{ movie.genere }}</td>
+                    <td>{{ movie.director }}</td>
+                    <td>{{ movie.cast }}</td>
+                    <td>{{ movie.synopsis }}</td>
+                    <td>{{ movie.duration }}</td>
+                    <td>{{ movie.release_date }}</td>
+                    <td>{{ movie.rating }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_movie', id=movie.id) }}" class="btn btn-primary">Edit</a>
+                        <a href="{{ url_for('delete_movie', id=movie.id) }}" class="btn btn-danger">Delete</a>
                 </tr>
             {% endfor %}
         </tbody>
