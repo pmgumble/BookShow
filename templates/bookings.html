@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Your Bookings</h1>
+  {% if bookings %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Movie</th>
+          <th>Venue</th>
+          <th>Showtime</th>
+          <th>Number of Tickets</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for booking in bookings %}
+          <tr>
+            <td>{{ booking.movie.name }}</td>
+            <td>{{ booking.cinema.name }}</td>
+            <td>{{ booking.showtime.time }}</td>
+            <td>{{ booking.num_tickets }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>You haven't made any bookings yet.</p>
+  {% endif %}
+{% endblock %}

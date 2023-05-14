@@ -42,6 +42,8 @@ class LoginForm(FlaskForm):
 
 # Create a booking form
 class BookingForm(FlaskForm):
+    venue = StringField("Venue", validators=[DataRequired()])
+    show_time = StringField("Show Time", validators=[DataRequired()])
     num_tickets = StringField("Number of Tickets", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
@@ -331,66 +333,6 @@ def edit_movie(id):
 
 
 
-# @app.route('/admin', methods=['GET', 'POST'])
-# @login_required
-# def admin():
-#     # Check if current user is admin
-#     if not current_user.is_admin:
-#         return redirect(url_for('home'))
-
-#     show_form = ShowForm()
-#     # cinema_form = CinemaForm()
-
-#     if show_form.validate_on_submit():
-#         # Retrieve form data
-#         venue_id = show_form.venue_id.data
-#         movie_id = show_form.movie_id.data
-#         date = show_form.date.data
-#         time = show_form.time.data
-#         ticket_price = show_form.ticket_price.data  
-
-#         # Create a new Showtime object
-#         show = Showtime(cinema_id=venue_id, movie_id=movie_id, date=date, time=time, ticket_price=ticket_price)
-
-#         # Add new show to the database
-#         db.session.add(show)
-#         db.session.commit()
-
-#         # Flash message to indicate success
-#         flash('New show added successfully!', 'success')
-
-#         # Redirect back to admin page
-#         return redirect(url_for('admin'))
-
-#     # if cinema_form.validate_on_submit():
-#     #     # Retrieve form data
-#     #     name = cinema_form.name.data
-#     #     place = cinema_form.place.data
-#     #     capacity = cinema_form.capacity.data
-#     #     # image_url = cinema_form.image_url.data
-#     #     # description = cinema_form.description.data
-
-#     #     # Create a new Cinema object
-#     #     cinema = Cinema(name=name, location=place, seating_capacity=capacity)
-
-#     #     # Add new cinema to the database
-#     #     db.session.add(cinema)
-#     #     db.session.commit()
-
-#         # Flash message to indicate success
-#         # flash('New cinema added successfully!', 'success')
-
-#         # Redirect back to admin page
-#         # return redirect(url_for('admin'))
-
-#     # Get all cinemas from the database
-#     # cinemas = Cinema.query.all()
-
-#     # Get all shows from the database
-#     shows = Showtime.query.all()
-
-#     return render_template('admin.html', shows=shows, show_form=show_form)
-
 
 @app.route('/admin/delete_show/<int:id>', methods=['GET','POST'])
 @login_required
@@ -565,102 +507,12 @@ def delete_cinema(id):
     return redirect(url_for('admin'))
 
 
-# @app.route('/movies/<int:movie_id>')
-# def movie_detail(movie_id):
-#     movie = Movie.query.get_or_404(movie_id)
-#     showtimes = Showtime.query.filter_by(movie_id=movie_id).all()
-#     # for showtime in showtimes:
-#     #     showtime.time = datetime.strptime(showtime.time, '%Y-%m-%d %H:%M:%S')
-#     return render_template('movie_detail.html', movie=movie, showtimes=showtimes)
-
-
-# @app.route('/venues')
-# def venues():
-#     venues = Venue.query.all()
-#     return render_template('venues.html', venues=venues)
-
-
-# @app.route('/shows/<int:show_id>')
-# def show_detail(show_id):
-#     show = Show.query.get_or_404(show_id)
-#     return render_template('show_detail.html', show=show)
-
-
-
-# @app.route('/book/<int:show_id>', methods=['GET', 'POST'])
-# def book(show_id):
-#     show = Show.query.get_or_404(show_id)
-#     if request.method == 'POST':
-#         num_tickets = int(request.form['num_tickets'])
-#         if num_tickets <= 0 or num_tickets > (show.venue.capacity - show.num_booked):
-#             flash('Invalid number of tickets.')
-#             return redirect(url_for('book', show_id=show.id))
-        
-
-
-
-
-# # Route for booking tickets
-# @app.route('/book_tickets', methods=['GET', 'POST'])
-# def book_tickets():
-#     if request.method == 'POST':
-#         # Get show and venue ID from form
-#         show_id = request.form.get('show_id')
-#         venue_id = request.form.get('venue_id')
-
-#         # Query the database for the selected show and venue
-#         show = Show.query.get(show_id)
-#         venue = Venue.query.get(venue_id)
-
-#         # Get number of tickets to book from form
-#         num_tickets = int(request.form.get('num_tickets'))
-
-#         # Check if there are enough seats available
-#         if num_tickets > venue.capacity - show.num_booked:
-#             return render_template('booking_error.html')
-
-#         # Update the number of booked tickets for the show
-#         show.num_booked += num_tickets
-#         db.session.commit()
-
-#         # Create a new booking for the user
-#         booking = Booking(show_id=show_id, venue_id=venue_id, num_tickets=num_tickets)
-#         db.session.add(booking)
-#         db.session.commit()
-
-#         return redirect(url_for('booking_confirmation'))
-
-#     # Query the database for all available shows and venues
-#     shows = Show.query.all()
-#     venues = Venue.query.all()
-
-#     return render_template('book_tickets.html', shows=shows, venues=venues)
-
-# @login_manager.user_loader
-# def load_user(user_id):
-#     return User.query.get(int(user_id))
 
 
 
 
 
 
-
-# @app.route('/show/new', methods=['GET', 'POST'])
-# @login_required
-# def new_show():
-#     form = ShowForm()
-#     form.venue.choices = [(venue.id, venue.name) for venue in Venue.query.order_by('name')]
-#     if form.validate_on_submit():
-#         show = Show(name=form.name.data, rating=form.rating.data, tags=form.tags.data, 
-#                     ticket_price=form.ticket_price.data, venue_id=form.venue.data)
-        
-
-#         db.session.add(show)
-#         db.session.commit()
-#         flash('Your show has been created!')
-#         return redirect(url_for('show', show_id=show.id))
-#     return render_template('create_show.html', title='New Show', form=form)
 
 
 
@@ -685,4 +537,45 @@ def delete_cinema(id):
 #     user = User.query.filter_by(username=username).first_or_404()
 #     return render_template('user.html', user=user)
 
- 
+
+@app.route('/book_tickets/<int:movie_id>', methods=['GET', 'POST'])
+@login_required
+def book_tickets(movie_id):
+    form = BookingForm()
+    if form.validate_on_submit():
+        # Retrieve form data
+        venue = form.venue.data
+        show_time = form.show_time.data
+        num_tickets = form.num_tickets.data
+
+        # Create a new Booking object
+        booking = Booking(user_id=current_user.id, movie_id=movie_id, cinema_id=venue, showtime_id=show_time, num_tickets=num_tickets)
+
+        # Add new booking to the database
+        db.session.add(booking)
+        db.session.commit()
+
+        # Flash message to indicate success
+        flash('Booking successful!', 'success')
+
+        # Redirect user to bookings page
+        return redirect(url_for('bookings'))
+
+    # Get movie with the specified ID
+    movie = Movie.query.get_or_404(movie_id)
+
+    # Get all cinemas from the database
+    cinemas = Cinema.query.all()
+
+    # Get all shows from the database
+    shows = Showtime.query.all()
+
+    return render_template('book_tickets.html', movie=movie, cinemas=cinemas, shows=shows, form=form)
+
+@app.route('/bookings', methods=['GET', 'POST'])
+@login_required
+def bookings():
+    # Get all bookings from the database
+    bookings = Booking.query.filter_by(user_id=current_user.id).all()
+
+    return render_template('bookings.html', bookings=bookings)

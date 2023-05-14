@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+  <h1>Welcome to Book My Show!</h1>
+  <p class="lead">Find your favorite movies and book your tickets online.</p>
+  <hr class="my-4">
+  <p>Get the best movie experience with Book My Show.</p>
+  <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+</div>
+
+<section id="book-tickets" class="mt-5">
+  <div class="container">
+    <h2 class="mb-4">Book {{ movie.name }} Tickets</h2>
+    <form method="post">
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+        <label for="venue">Venue:</label>
+        <select class="form-control" id="venue" name="venue">
+          {% for cinema in cinemas %}
+          <option value="{{ cinema.id }}">{{ cinema.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="show_time">Show Time:</label>
+        <select class="form-control" id="show_time" name="show_time">
+          {% for show in shows %}
+          {% if show.movie_id == movie.id %}
+          <option value="{{ show.id }}">{{ show.show_time }}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="num_tickets">Number of Tickets:</label>
+        {{ form.num_tickets(class="form-control") }}
+      </div>
+      <button type="submit" class="btn btn-primary">Book Tickets</button>
+    </form>
+  </div>
+</section>
+
+{% endblock %}

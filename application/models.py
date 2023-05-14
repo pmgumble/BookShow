@@ -60,6 +60,7 @@ class Cinema(db.Model):
     location = db.Column(db.String(100), nullable=False)
     seating_capacity = db.Column(db.Integer, nullable=False)
     showtimes = db.relationship('Showtime', backref='cinema', lazy=True)
+    bookings = db.relationship('Booking', backref='cinema', lazy=True)
 
 
 
@@ -72,6 +73,7 @@ class Showtime(db.Model):
     time = db.Column(db.String, nullable=False)
     ticket_price = db.Column(db.Float, nullable=False)
     bookings = db.relationship('Booking', backref='showtime', lazy=True)
+    num_booked = db.Column(db.Integer, default=0)
 
 
 
@@ -82,8 +84,8 @@ class Booking(db.Model):
     showtime_id = db.Column(db.Integer, db.ForeignKey('showtime.id'), nullable=False)
     movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'), nullable=False)
     cinema_id = db.Column(db.Integer, db.ForeignKey('cinema.id'), nullable=False)
-    date = db.Column(db.Date, nullable=False)
-    time = db.Column(db.Time, nullable=False)
+    date = db.Column(db.Date)
+    time = db.Column(db.Time)
     num_tickets = db.Column(db.Integer, nullable=False)
     # show_id = db.Column(db.Integer, db.ForeignKey('show.id'), nullable=False)
     # # show = db.relationship('Show', backref=db.backref('bookings', lazy=True))

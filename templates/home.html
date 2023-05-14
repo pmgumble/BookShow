@@ -23,7 +23,7 @@
           <div class="card-body">
             <h5 class="card-title">{{ movie.name }}</h5>
             <p class="card-text">{{ movie.synopsis }}</p>
-            
+            <a href="{{ url_for('book_tickets', movie_id=movie.id) }}" class="btn btn-primary">Book Now</a>
           </div>
         </div>
       </div>
