@@ -99,6 +99,9 @@ class MovieForm(FlaskForm):
     rating = StringField("Rating", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
+
+
+
 # Create a user registration form
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -117,6 +120,9 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
+
+
+
 
 
 # Create a login Page
@@ -144,8 +150,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
-
 
 
 
@@ -509,35 +513,6 @@ def delete_cinema(id):
 
 
 
-
-
-
-
-
-
-
-
-# # @app.route('/register', methods=['GET', 'POST'])
-# # def register():
-# #     if current_user.is_authenticated:
-# #         return redirect(url_for('index'))
-# #     form = RegistrationForm()
-# #     if form.validate_on_submit():
-# #         user = User(username=form.username.data, email=form.email.data)
-# #         user.set_password(form.password.data)
-# #         db.session.add(user)
-# #         db.session.commit()
-# #         flash('Congratulations, you are now a registered user!')
-# #         return redirect(url_for('login'))
-# #     return render_template('register.html', title='Register', form=form)
-
-# @app.route('/user/<username>')
-# @login_required
-# def user(username):
-#     user = User.query.filter_by(username=username).first_or_404()
-#     return render_template('user.html', user=user)
-
-
 @app.route('/book_tickets/<int:movie_id>', methods=['GET', 'POST'])
 @login_required
 def book_tickets(movie_id):
@@ -546,7 +521,12 @@ def book_tickets(movie_id):
         # Retrieve form data
         venue = form.venue.data
         show_time = form.show_time.data
-        num_tickets = form.num_tickets.data
+        # num_tickets = form.num_tickets.data
+        num_tickets = int(request.form.get('num_tickets'))
+
+        # if num_tickets > venue.seating_capacity - show_time.num_booked:
+        #     return render_template('booking_error.html')
+        # show_time.num_booked += num_tickets
 
         # Create a new Booking object
         booking = Booking(user_id=current_user.id, movie_id=movie_id, cinema_id=venue, showtime_id=show_time, num_tickets=num_tickets)
@@ -579,3 +559,23 @@ def bookings():
     bookings = Booking.query.filter_by(user_id=current_user.id).all()
 
     return render_template('bookings.html', bookings=bookings)
+
+@app.route('/admin/delete_booking/<int:id>', methods=['GET','POST'])
+@login_required
+def delete_booking(id):
+    # Check if current user is admin
+    if not current_user.is_admin:
+        return redirect(url_for('home'))
+
+    # Get booking with the specified ID
+    booking = Booking.query.get_or_404(id)
+
+    # Delete booking from database
+    db.session.delete(booking)
+    db.session.commit()
+
+    # Flash message to indicate success
+    flash('Booking deleted successfully!', 'success')
+
+    # Redirect back to admin page
+    return redirect(url_for('admin'))
