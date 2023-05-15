@@ -102,6 +102,7 @@ class MovieForm(FlaskForm):
 
 
 
+
 # Create a user registration form
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -120,9 +121,6 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
-
-
-
 
 
 # Create a login Page
@@ -150,8 +148,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
-
 
 # User Registration 
 
