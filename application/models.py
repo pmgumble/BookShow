@@ -46,7 +46,7 @@ class Movie(db.Model):
     duration = db.Column(db.Integer, nullable=False)
     release_date = db.Column(db.Text)
     rating = db.Column(db.Float, nullable=False)
-    # poster = db.Column(db.String(100), nullable=False)
+    poster = db.Column(db.String(100))
     bookings = db.relationship('Booking', backref='movie', lazy=True)
     comments = db.relationship('Comment', backref='movie', lazy=True)
     likes = db.relationship('Like', backref='movie', lazy=True)

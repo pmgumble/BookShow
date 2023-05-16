@@ -19,6 +19,14 @@
       {% for movie in movies %}
       <div class="col-md-3">
         <div class="card mb-4">
+          <!-- Display the poster image -->
+            {% if movie.poster %}
+            <img src="{{ url_for('static', filename='images/' + movie.poster) }}" alt="Movie Poster">
+            {% else %}
+            <p>No poster available</p>
+            {% endif %}
+
+
           <img class="card-img-top" src="{{ movie.image_url }}" alt="{{ movie.title }}">
           <div class="card-body">
             <h5 class="card-title">{{ movie.name }}</h5>

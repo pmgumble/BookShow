@@ -6,11 +6,13 @@ from application.database import db
 from flask_login import UserMixin, login_user, login_required, logout_user, current_user, LoginManager, login_manager
 
 from flask_wtf import FlaskForm
-from wtforms import StringField,SubmitField,PasswordField, BooleanField, ValidationError, TextAreaField
+from wtforms import StringField,SubmitField,PasswordField, BooleanField, ValidationError, TextAreaField,FileField
 from wtforms.validators import DataRequired, EqualTo, Length
 from werkzeug.security import generate_password_hash, check_password_hash
-from wtforms .widgets import TextArea
+from wtforms .widgets import TextArea, FileInput
 from datetime import datetime
+import os
+from werkzeug.utils import secure_filename
 
 
 
@@ -98,6 +100,7 @@ class MovieForm(FlaskForm):
     release_date = StringField("Release Date", validators=[DataRequired()])
     rating = StringField("Rating", validators=[DataRequired()])
     submit = SubmitField("Submit")
+    poster = FileField("Poster")
 
 
 
@@ -246,6 +249,7 @@ def admin():
         duration = movie_form.duration.data
         release_date = movie_form.release_date.data
         rating = movie_form.rating.data
+        poster = movie_form.poster.data
 
         # Create a new Movie object
         movie = Movie(name=name, genre=genere, director=director, cast=cast, synopsis=synopsis, duration=duration, release_date=release_date, rating=rating)
