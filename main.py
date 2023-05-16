@@ -30,8 +30,8 @@ from application.controllers import *
 
 # Import all the api routes so
 from application.api import *
-api.add_resource(CinemaAPI, '/api/cinema','/api/resource', '/api/cinema/<int:id>', '/api/cinema/<string:name>')
-api.add_resource(MovieAPI, '/api/movie', '/api/movie/<int:id>', '/api/movie/<string:name>')
+api.add_resource(CinemaAPI, '/api/cinema','/api/resource', '/api/cinema/<int:cinema_id>', '/api/cinema/<string:name>')
+api.add_resource(MovieAPI, '/api/movie', '/api/movie/<int:movie_id>', '/api/movie/<string:name>')
 api.add_resource(ShowtimeAPI, '/api/showtime', '/api/showtime/<int:id>', '/api/showtime/<string:name>')
 api.add_resource(BookingAPI, '/api/booking', '/api/booking/<int:id>', '/api/booking/<string:name>')
 api.add_resource(UserAPI, '/api/user', '/api/user/<int:id>', '/api/user/<string:name>')

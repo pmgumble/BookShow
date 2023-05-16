@@ -52,6 +52,20 @@ class Movie(db.Model):
     likes = db.relationship('Like', backref='movie', lazy=True)
     showtimes = db.relationship('Showtime', backref='movie', lazy=True)
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'genre': self.genre,
+            'director': self.director,
+            'cast': self.cast,
+            'synopsis': self.synopsis,
+            'duration': self.duration,
+            'release_date': self.release_date,
+            'rating': self.rating
+        }
+
+
 
 
 class Cinema(db.Model):
@@ -62,7 +76,13 @@ class Cinema(db.Model):
     showtimes = db.relationship('Showtime', backref='cinema', lazy=True)
     bookings = db.relationship('Booking', backref='cinema', lazy=True)
 
-
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'location': self.location,
+            'seating_capacity': self.seating_capacity
+        }
 
 
 class Showtime(db.Model):
@@ -75,7 +95,15 @@ class Showtime(db.Model):
     bookings = db.relationship('Booking', backref='showtime', lazy=True)
     num_booked = db.Column(db.Integer, default=0)
 
-
+    def serialize(self):
+        return {
+            'id': self.id,
+            'movie_id': self.movie_id,
+            'cinema_id': self.cinema_id,
+            'date': self.date,
+            'time': self.time,
+            'ticket_price': self.ticket_price
+        }
 
 
 class Booking(db.Model):
@@ -87,26 +115,18 @@ class Booking(db.Model):
     date = db.Column(db.Date)
     time = db.Column(db.Time)
     num_tickets = db.Column(db.Integer, nullable=False)
-    # show_id = db.Column(db.Integer, db.ForeignKey('show.id'), nullable=False)
-    # # show = db.relationship('Show', backref=db.backref('bookings', lazy=True))
+    # total_price = db.Column(db.Float, nullable=False)
+    # created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-# class Venue(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String(100), nullable=False)
-#     place = db.Column(db.String(100), nullable=False)
-#     capacity = db.Column(db.Integer, nullable=False)
-#     shows = db.relationship('Show', backref='venue', lazy=True)
+    def serialize(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'movie_id': self.movie_id,
+            'showtime_id': self.showtime_id,
+            'num_tickets': self.num_tickets
+        }
 
-# class Show(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String(100), nullable=False)
-#     rating = db.Column(db.Float, nullable=False)
-#     tags = db.Column(db.String(1000), nullable=False)
-#     ticket_price = db.Column(db.Float, nullable=False)
-#     venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), nullable=False)
-#     bookings = db.relationship('Booking', backref='show', lazy=True)
-#     comments = db.relationship('Comment', backref='show', lazy=True)
-#     likes = db.relationship('Like', backref='show', lazy=True)
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -17,6 +17,39 @@ auth = HTTPBasicAuth()
 
 
 # API for creating a new cinema object
+# class CinemaAPI(Resource):
+#     def __init__(self):
+#         self.reqparse = reqparse.RequestParser()
+#         self.reqparse.add_argument('name', type=str, required=True, help='No cinema name provided', location='json')
+#         self.reqparse.add_argument('location', type=str, required=True, help='No cinema location provided', location='json')
+#         self.reqparse.add_argument('seating_capacity', type=int, required=True, help='No cinema seating capacity provided', location='json')
+#         super(CinemaAPI, self).__init__()
+
+#     def post(self):
+#         args = self.reqparse.parse_args()
+#         cinema = Cinema(name=args['name'], location=args['location'],seating_capacity=args['seating_capacity'])
+#         db.session.add(cinema)
+#         db.session.commit()
+#         return {'status': 'success', 'data': cinema.serialize()}, 201
+    
+#     def get(self):
+#         cinemas = Cinema.query.all()
+#         return {'status': 'success', 'data': [cinema.serialize() for cinema in cinemas]}, 200
+#     def delete(self):
+#         cinemas = Cinema.query.all()
+#         for cinema in cinemas:
+#             db.session.delete(cinema)
+#         db.session.commit()
+#         return {'status': 'success', 'data': 'All cinemas deleted'}, 200
+#     def put(self):
+#         args = self.reqparse.parse_args()
+#         cinema = Cinema.query.filter_by(name=args['name']).first()
+#         cinema.location = args['location']
+#         cinema.seating_capacity = args['seating_capacity']
+#         db.session.commit()
+#         return {'status': 'success', 'data': cinema.serialize()}, 200
+
+
 class CinemaAPI(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
@@ -27,27 +60,45 @@ class CinemaAPI(Resource):
 
     def post(self):
         args = self.reqparse.parse_args()
-        cinema = Cinema(name=args['name'], location=args['location'],seating_capacity=args['seating_capacity'])
+        cinema = Cinema(name=args['name'], location=args['location'], seating_capacity=args['seating_capacity'])
         db.session.add(cinema)
         db.session.commit()
-        return {'status': 'success', 'data': cinema.serialize()}, 201
+        return {'status': 'success', 'data': cinema}, 201
     
-    def get(self):
-        cinemas = Cinema.query.all()
-        return {'status': 'success', 'data': [cinema.serialize() for cinema in cinemas]}, 200
-    def delete(self):
-        cinemas = Cinema.query.all()
-        for cinema in cinemas:
+    def get(self, cinema_id=None):
+        if cinema_id is not None:
+            cinema = Cinema.query.get_or_404(cinema_id)
+            return {'status': 'success', 'data': cinema}, 200
+        else:
+            cinemas = Cinema.query.all()
+            return {'status': 'success', 'data': cinemas}, 200
+
+    def delete(self, cinema_id=None):
+        if cinema_id is not None:
+            cinema = Cinema.query.get_or_404(cinema_id)
             db.session.delete(cinema)
-        db.session.commit()
-        return {'status': 'success', 'data': 'All cinemas deleted'}, 200
-    def put(self):
+            db.session.commit()
+            return {'status': 'success', 'data': 'Cinema deleted'}, 200
+        else:
+            cinemas = Cinema.query.all()
+            for cinema in cinemas:
+                db.session.delete(cinema)
+            db.session.commit()
+            return {'status': 'success', 'data': 'All cinemas deleted'}, 200
+
+    def put(self, cinema_id):
         args = self.reqparse.parse_args()
-        cinema = Cinema.query.filter_by(name=args['name']).first()
+        cinema = Cinema.query.get_or_404(cinema_id)
+        cinema.name = args['name']
         cinema.location = args['location']
         cinema.seating_capacity = args['seating_capacity']
         db.session.commit()
-        return {'status': 'success', 'data': cinema.serialize()}, 200
+        return {'status': 'success', 'data': cinema}, 200
+
+
+       
+
+
 
 # API for creating a new movie object
 class MovieAPI(Resource):
@@ -93,7 +144,7 @@ class MovieAPI(Resource):
         db.session.commit()
         return {'status': 'success', 'data': movie.serialize()}, 200
     
-# API for creating a new showtime object
+# API for creating a new showtime object                                                                                                                                                       
 class ShowtimeAPI(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
@@ -115,20 +166,43 @@ class ShowtimeAPI(Resource):
     def get(self):
         showtimes = Showtime.query.all()
         return {'status': 'success', 'data': [showtime.serialize() for showtime in showtimes]}, 200
-    def delete(self):
-        showtimes = Showtime.query.all()
-        for showtime in showtimes:
-            db.session.delete(showtime)
-        db.session.commit()
-        return {'status': 'success', 'data': 'All showtimes deleted'}, 200
-    def put(self):
-        args = self.reqparse.parse_args()
-        showtime = Showtime.query.filter_by(movie_id=args['movie_id'], cinema_id=args['cinema_id']).first()
-        showtime.showtime = args['showtime']
-        db.session.commit()
-        return {'status': 'success', 'data': showtime.serialize()}, 200
     
-# API for creating a new user object
+    def delete(self, id=None):
+        if id is None:
+            showtimes = Showtime.query.all()
+            for showtime in showtimes:
+                db.session.delete(showtime)
+            db.session.commit()
+            return {'status': 'success', 'data': 'All showtimes deleted'}, 200
+        else:
+            showtime = Showtime.query.get(id)
+            if showtime is not None:
+                db.session.delete(showtime)
+                db.session.commit()
+                return {'status': 'success', 'data': 'Showtime deleted'}, 200
+            else:
+                return {'status': 'fail', 'message': 'Showtime not found'}, 404
+    
+    def put(self, id=None):
+        args = self.reqparse.parse_args()
+        if id is None:
+            return {'status': 'fail', 'message': 'No showtime ID provided'}, 400
+        else:
+            showtime = Showtime.query.get(id)
+            if showtime is not None:
+                showtime.movie_id = args['movie_id']
+                showtime.cinema_id = args['cinema_id']
+                showtime.date = args['date']
+                showtime.time = args['time']
+                showtime.ticket_price = args['ticket_price']
+                db.session.commit()
+                return {'status': 'success', 'data': showtime.serialize()}, 200
+            else:
+                return {'status': 'fail', 'message': 'Showtime not found'}, 404
+
+    
+
+
 class UserAPI(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
@@ -143,24 +217,75 @@ class UserAPI(Resource):
         user.password = args['password']
         db.session.add(user)
         db.session.commit()
-        return {'status': 'success', 'data': user.serialize()}, 201
+        return {'status': 'success', 'data': {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email
+        }}, 201
     
-    def get(self):
-        users = User.query.all()
-        return {'status': 'success', 'data': [user.serialize() for user in users]}, 200
-    def delete(self):
-        users = User.query.all()
-        for user in users:
+    def get(self, id=None, name=None):
+        if id is not None:
+            user = User.query.get(id)
+            if not user:
+                abort(404, message='User not found')
+            return {'status': 'success', 'data': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email
+            }}, 200
+        elif name is not None:
+            user = User.query.filter_by(username=name).first()
+            if not user:
+                abort(404, message='User not found')
+            return {'status': 'success', 'data': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email
+            }}, 200
+        else:
+            users = User.query.all()
+            data = [{'id': user.id, 'username': user.username, 'email': user.email} for user in users]
+            return {'status': 'success', 'data': data}, 200
+
+    def delete(self, id=None, name=None):
+        if id is not None:
+            user = User.query.get(id)
+            if not user:
+                abort(404, message='User not found')
             db.session.delete(user)
-        db.session.commit()
-        return {'status': 'success', 'data': 'All users deleted'}, 200
-    def put(self):
+            db.session.commit()
+            return {'status': 'success', 'data': 'User deleted'}, 200
+        elif name is not None:
+            user = User.query.filter_by(username=name).first()
+            if not user:
+                abort(404, message='User not found')
+            db.session.delete(user)
+            db.session.commit()
+            return {'status': 'success', 'data': 'User deleted'}, 200
+        else:
+            users = User.query.all()
+            for user in users:
+                db.session.delete(user)
+            db.session.commit()
+            return {'status': 'success', 'data': 'All users deleted'}, 200
+
+    def put(self, id=None, name=None):
         args = self.reqparse.parse_args()
-        user = User.query.filter_by(username=args['username']).first()
+        if id is not None:
+            user = User.query.get(id)
+            if not user:
+                abort(404, message='User not found')
+        elif name is not None:
+            user = User.query.filter_by(username=name).first()
+            if not user:
+                abort(404, message='User not found')
+        else:
+            abort(400, message='No user identifier provided')
+
         user.email = args['email']
-        user.password = args['password']
-        db.session.commit()
-        return {'status': 'success', 'data': user.serialize()}, 200
+       
+
+
 
 # API for creating a new booking object
 class BookingAPI(Resource):
