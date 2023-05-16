@@ -13,6 +13,7 @@ from wtforms .widgets import TextArea, FileInput
 from datetime import datetime
 import os
 from werkzeug.utils import secure_filename
+import uuid as uuid
 
 
 
@@ -20,6 +21,9 @@ from werkzeug.utils import secure_filename
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+UPLOAD_FOLDER = 'static/images/'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 @login_manager.user_loader
@@ -250,14 +254,21 @@ def admin():
         release_date = movie_form.release_date.data
         rating = movie_form.rating.data
         poster = movie_form.poster.data
+        # filename = secure_filename(poster.filename)
+        # poster.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
+        pic_filenmae = secure_filename(request.files['poster'].filename)
+        pic_name = str(uuid.uuid1()) + "_" + pic_filenmae
+        saver = request.files['poster']  
+        post_pic = pic_name
 
         # Create a new Movie object
-        movie = Movie(name=name, genre=genere, director=director, cast=cast, synopsis=synopsis, duration=duration, release_date=release_date, rating=rating)
+        movie = Movie(name=name, genre=genere, director=director, cast=cast, synopsis=synopsis, duration=duration, release_date=release_date, rating=rating,poster=post_pic)
 
         # Add new movie to the database
         db.session.add(movie)
         db.session.commit()
-
+        saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
         # Flash message to indicate success
         flash('New movie added successfully!', 'success')
 

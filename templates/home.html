@@ -21,7 +21,7 @@
         <div class="card mb-4">
           <!-- Display the poster image -->
             {% if movie.poster %}
-            <img src="{{ url_for('static', filename='images/' + movie.poster) }}" alt="Movie Poster">
+            <img src="{{ url_for('static', filename='images/' + movie.poster) }}" width="200" alt="Movie Poster">
             {% else %}
             <p>No poster available</p>
             {% endif %}
