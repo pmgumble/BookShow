@@ -60,8 +60,8 @@ class ReviewForm(FlaskForm):
 
 # Create a show form
 class ShowForm(FlaskForm):
-    venue_id = StringField("Venue ID", validators=[DataRequired()])
-    movie_id = StringField("Movie ID", validators=[DataRequired()])
+    venue_name = StringField("Venue Name", validators=[DataRequired()])
+    movie_name = StringField("Movie Name", validators=[DataRequired()])
     date = StringField("Date", validators=[DataRequired()])
     time = StringField("Time", validators=[DataRequired()])
     ticket_price = StringField("Ticket Price", validators=[DataRequired()])
@@ -187,6 +187,135 @@ def movie_detail(movie_id):
     showtimes = movie.showtimes
     return render_template('movie_detail.html', movie=movie, showtimes=showtimes)
 
+
+@app.route('/admin/add_show', methods=['GET', 'POST'])
+@login_required
+def add_show():
+    # Check if current user is admin
+    if not current_user.is_admin:
+        return redirect(url_for('home'))
+    show_form = ShowForm()
+    if request.method == 'POST':
+        # Retrieve form data
+        venue_id = request.form['venue']
+        movie_id = request.form['movie']
+        date = show_form.date.data
+        time = show_form.time.data
+        ticket_price = show_form.ticket_price.data  
+
+        # Create a new Showtime object
+        show = Showtime(cinema_id=venue_id, movie_id=movie_id, date=date, time=time, ticket_price=ticket_price)
+
+        # Add new show to the database
+        db.session.add(show)
+        db.session.commit()
+
+        # Flash message to indicate success
+        flash('New show added successfully!', 'success')
+
+        # Redirect back to admin page
+        return redirect(url_for('admin'))
+    
+    # Get all cinemas from the database
+    cinemas = Cinema.query.all()
+
+    # Get all shows from the database
+    shows = Showtime.query.all()
+
+    # Get all Movies from the databse
+    movies = Movie.query.all()
+
+    return render_template('add_show.html', shows=shows, cinemas=cinemas,movies=movies,show_form=show_form)
+
+
+@app.route('/admin/add_movie', methods=['GET', 'POST'])
+@login_required
+def add_movie():
+    # Check if current user is admin
+    if not current_user.is_admin:
+        return redirect(url_for('home'))
+    movie_form = MovieForm()
+    if request.method == 'POST':
+        # Retrieve form data
+        name = movie_form.name.data
+        # image_url = movie_form.image_url.data
+        genere = movie_form.genere.data
+        director = movie_form.director.data
+        cast = movie_form.cast.data
+        synopsis = movie_form.synopsis.data
+        duration = movie_form.duration.data
+        release_date = movie_form.release_date.data
+        rating = movie_form.rating.data
+
+        # Create a new Movie object
+        movie = Movie(name=name, genre=genere, director=director, cast=cast, synopsis=synopsis, duration=duration, release_date=release_date, rating=rating)
+
+        # Add new movie to the database
+        db.session.add(movie)
+        db.session.commit()
+
+        # Flash message to indicate success
+        flash('New movie added successfully!', 'success')
+
+        # Redirect back to admin page
+        return redirect(url_for('admin'))
+    
+    # Get all cinemas from the database
+    cinemas = Cinema.query.all()
+
+    # Get all shows from the database
+    shows = Showtime.query.all()
+
+    # Get all Movies from the databse
+    movies = Movie.query.all()
+
+    return render_template('add_movie.html', shows=shows, cinemas=cinemas,movies=movies,movie_form=movie_form)
+
+
+@app.route('/admin/add_cinema', methods=['GET', 'POST'])
+@login_required
+def add_cinema():
+    # Check if current user is admin
+    if not current_user.is_admin:
+        return redirect(url_for('home'))
+    cinema_form = CinemaForm()
+    if request.method == 'POST':
+        # Retrieve form data
+        name = cinema_form.name.data
+        place = cinema_form.place.data
+        capacity = cinema_form.capacity.data
+        image_url = cinema_form.image_url.data
+        description = cinema_form.description.data
+
+        # Create a new Cinema object
+        cinema = Cinema(name=name, location=place, seating_capacity=capacity)
+
+        # Add new cinema to the database
+        db.session.add(cinema)
+        db.session.commit()
+
+        # Flash message to indicate success
+        flash('New cinema added successfully!', 'success')
+
+        # Redirect back to admin page
+        return redirect(url_for('admin'))
+    
+    # Get all cinemas from the database
+    cinemas = Cinema.query.all()
+
+    # Get all shows from the database
+    shows = Showtime.query.all()
+
+    # Get all Movies from the databse
+    movies = Movie.query.all()
+
+    return render_template('add_cinema.html', shows=shows, cinemas=cinemas,movies=movies,cinema_form=cinema_form)
+
+
+
+
+
+
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin():
@@ -202,8 +331,9 @@ def admin():
 
     if show_form.validate_on_submit():
         # Retrieve form data
-        venue_id = show_form.venue_id.data
-        movie_id = show_form.movie_id.data
+        venue_id = request.form['venue_id']
+        movie_id = request.form['movie_id']
+        # movie_id = show_form.movie_name.data
         date = show_form.date.data
         time = show_form.time.data
         ticket_price = show_form.ticket_price.data  

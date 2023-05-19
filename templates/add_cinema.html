@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <h2 class="mb-4">Add New Cinema</h2>
+                <form method="POST" enctype="multipart/form-data">
+                    {{ cinema_form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ cinema_form.name.label(class="form-label") }}
+                        {{ cinema_form.name(class="form-control") }}
+                        {% for error in cinema_form.name.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ cinema_form.place.label(class="form-label") }}
+                        {{ cinema_form.place(class="form-control") }}
+                        {% for error in cinema_form.place.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ cinema_form.capacity.label(class="form-label") }}
+                        {{ cinema_form.capacity(class="form-control") }}
+                        {% for error in cinema_form.capacity.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ cinema_form.image_url.label(class="form-label") }}
+                        {{ cinema_form.image_url(class="form-control") }}
+                        {% for error in cinema_form.image_url.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ cinema_form.description.label(class="form-label") }}
+                        {{ cinema_form.description(class="form-control") }}
+                        {% for error in cinema_form.description.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Cinema</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
